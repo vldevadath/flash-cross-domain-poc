@@ -1,9 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cross-Domain PolicyPoC</title>
+    <title>Cross-DomainfkrPolicy PoC</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        #output {
+            white-space: pre-wrap; /* Preserve whitespace and formatting */
+            background-color: #f0f0f0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+        #loading {
+            display: none;
+            font-weight: bold;
+        }
+    </style>
     <script>
         function makeRequest() {
+            document.getElementById("loading").style.display = "block"; // Show loading message
+            document.getElementById("output").innerText = ""; // Clear previous output
+
             fetch('https://cors-anywhere.herokuapp.com/https://www.oneplus.in/jcart')
                 .then(response => {
                     if (response.ok) {
@@ -18,6 +38,9 @@
                 .catch(error => {
                     console.error("Error fetching data:", error);
                     document.getElementById("output").innerText = "Error fetching data: " + error.message;
+                })
+                .finally(() => {
+                    document.getElementById("loading").style.display = "none"; // Hide loading message
                 });
         }
     </script>
@@ -25,6 +48,7 @@
 <body>
     <h1>Cross-Domain Policy PoC</h1>
     <button onclick="makeRequest()">Make Request</button>
+    <div id="loading">Loading...</div>
     <pre id="output"></pre>
 </body>
 </html>
